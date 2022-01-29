@@ -1,8 +1,0 @@
-Package: darkflip
-Version: 0.0.1
-Section: utility
-Prioiroty: optional
-Architecture: all
-Depends: yad, bc
-Maintainer: thomas.hastings@tutanota.com
-Description: A gsettings wrapper for Phosh
