@@ -51,7 +51,7 @@ export -f theme_switch generic_toggle inverse_toggle change_scaling
 
 # Draw window
 
-yad --title "Phosh Tweaks" --buttons-layout=center --form --scroll \
+yad --title "Darkflip (Phosh Tweaks)" --buttons-layout=center --form --scroll \
   --field='Theme':LBL --align=center \\\
   --field='':LBL --align=center \\\
   --field='Light/Dark Adwaita theme':fbtn "bash -c theme_switch" \
