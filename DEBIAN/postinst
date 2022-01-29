@@ -1,0 +1,3 @@
+#!/bin/sh
+chmod +x /usr/bin/darkflip
+exit 0

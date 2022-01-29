@@ -1,0 +1,87 @@
+#!/bin/bash
+# Functions for toggling settings
+generic_toggle() {
+    CURRENT_STATE=$(gsettings get org.gnome.desktop.$1 $2)
+    if [[ "$CURRENT_STATE" == 'true' ]]; then
+        gsettings set org.gnome.desktop.$1 $2 false
+        if [[ -z "$3" ]]; then
+            echo ""
+        else 
+            yad --title "Info" --buttons-layout=center --text "$3 disabled." --button='Close!gtk-cancel':1
+        fi
+    else
+        gsettings set org.gnome.desktop.$1 $2 true
+        if [[ -z "$3" ]]; then
+            echo ""
+        else 
+            yad --title "Info" --buttons-layout=center --text "$3 enabled." --button='Close!gtk-cancel':1
+        fi
+    fi
+}
+
+inverse_toggle() {
+    CURRENT_STATE=$(gsettings get org.gnome.desktop.$1 $2)
+    if [[ "$CURRENT_STATE" == 'true' ]]; then
+        gsettings set org.gnome.desktop.$1 $2 false
+        yad --title "Info" --buttons-layout=center --text "$3 enabled." --button='Close!gtk-cancel':1
+    else
+        gsettings set org.gnome.desktop.$1 $2 true
+        yad --title "Info" --buttons-layout=center --text "$3 disabled." --button='Close!gtk-cancel':1
+    fi
+}
+
+theme_switch() {
+    CURRENT_THEME=$(gsettings get org.gnome.desktop.interface gtk-theme)
+    if [[ "$CURRENT_THEME" == "'Adwaita'" ]]; then
+            gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+    else
+            gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita'
+    fi
+}
+
+change_scaling() {
+    CURRENT_SCALING=$(gsettings get org.gnome.desktop.interface text-scaling-factor)
+    NEW_SCALING=$(echo "$CURRENT_SCALING+$1" | bc)
+    echo $NEW_SCALING
+    gsettings set org.gnome.desktop.interface text-scaling-factor $NEW_SCALING
+}
+
+# Make the functions available
+export -f theme_switch generic_toggle inverse_toggle change_scaling
+
+# Draw window
+
+yad --title "Phosh Tweaks" --buttons-layout=center --form --scroll \
+  --field='Theme':LBL --align=center \\\
+  --field='':LBL --align=center \\\
+  --field='Light/Dark Adwaita theme':fbtn "bash -c theme_switch" \
+  --field='Top Bar':LBL --align=center \\\
+  --field='':LBL --align=center \\\
+  --field='Show seconds in clock':fbtn "bash -c \"generic_toggle interface clock-show-seconds\"" \
+  --field='Show date in clock':fbtn "bash -c \"generic_toggle interface clock-show-date\"" \
+  --field='Font scaling':LBL --align=center \\\
+  --field='':LBL --align=center \\\
+  --field='+0.01':fbtn "bash -c \"change_scaling 0.01 \"" \
+  --field='+0.05':fbtn "bash -c \"change_scaling 0.05 \"" \
+  --field='-0.05':fbtn "bash -c \"change_scaling -0.05 \"" \
+  --field='-0.01':fbtn "bash -c \"change_scaling -0.01 \"" \
+  --field='Reset to default (1.0)':fbtn "bash -c \"gsettings set org.gnome.desktop.interface text-scaling-factor 1.0 \"" \
+  --field='Sound':LBL --align=center \\\
+  --field='':LBL --align=center \\\
+  --field='Allow volume above 100%':fbtn "bash -c \"generic_toggle sound allow-volume-above-100-percent 'Allow volume above 100'\"" \
+  --field='Event sounds (?)':fbtn "bash -c \"generic_toggle sound event-sounds 'Event sounds'\"" \
+  --field='Animations\Notifications':LBL --align=center \\\
+  --field='':LBL --align=center \\\
+  --field='Toggle animations':fbtn "bash -c \"generic_toggle interface enable-animations 'Animations are'\"" \
+  --field='Notification banners':fbtn "bash -c \"generic_toggle notifications show-banners 'Notification banners'\"" \
+  --field='Notifications in lockscreen':fbtn "bash -c \"generic_toggle notifications show-in-lock-screen 'Notifications in lockscreen'\"" \
+  --field='Privacy':LBL --align=center \\\
+  --field='':LBL --align=center \\\
+  --field='Disable camera (?)':fbtn "bash -c \"inverse_toggle privacy disable-camera 'Camera'\"" \
+  --field='Disable microphone (?)':fbtn "bash -c \"inverse_toggle privacy disable-microphone 'Microphone'\"" \
+  --field='Disable sound output (?)':fbtn "bash -c \"inverse_toggle privacy disable-sound-output 'Sound output'\"" \
+  --field='Hide identity (?)':fbtn "bash -c \"inverse_toggle privacy hide-identity 'Hide identity'\"" \
+  --button='Close!gtk-cancel':1
+    
+
+

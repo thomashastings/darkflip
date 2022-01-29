@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Darkflip
+Exec=darkflip
+Comment=A gsettings wrapper for Phosh
+Terminal=false
+Icon=/usr/share/darkflip/AppIcon.svg
+Type=Application
